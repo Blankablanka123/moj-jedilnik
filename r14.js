@@ -63,7 +63,7 @@ Object.assign(window.recipePages||={}, {
     const prepTip=document.querySelector('#prep .tip');
     if(prepTip) prepTip.textContent='Kaj pripraviš večer prej za naslednji dan. Kljukice se shranijo v brskalniku; stvari, ki so boljše sveže, so označene tako, da jih pripraviš le delno.';
     const shopTip=document.querySelector('#shop .tip');
-    if(shopTip) shopTip.textContent='Nakupovalni seznam se menja glede na izbrani teden in je pripravljen za 2 odrasla + 2 otroka. Količine so za zdaj okvirne; natančne količine bom vezala na popolnoma prenesene recepte.';
+    if(shopTip) shopTip.textContent='Nakupovalni seznam se menja glede na izbrani teden in je pripravljen za 2 odrasla + 2 otroka. Seznam trenutno preverjam neposredno proti sestavinam receptov; posebne sestavine, ki so že potrjene, so dodane posebej.';
   }
 
   /* Paired-page safety check. Older imports sometimes contain two recipes from the same PDF spread. */
@@ -76,7 +76,32 @@ Object.assign(window.recipePages||={}, {
   }
 
   window.addEventListener('load',()=>{
+    /* Shopping-list corrections confirmed directly from clean recipe text. */
+    if(typeof weeks!=='undefined' && weeks[0]){
+      const add=(cat,name,qty)=>{
+        const arr=weeks[0].shop[cat]||(weeks[0].shop[cat]=[]);
+        if(!arr.some(x=>x[0]===name)) arr.push([name,qty]);
+      };
+      add('Sadje in zelenjava','Breskve/nektarine','po receptu');
+      add('Sadje in zelenjava','Češnjev paradižnik','po receptu');
+      add('Sadje in zelenjava','Mlada špinača','po receptu');
+      add('Sadje in zelenjava','Čebula in česen','po receptu');
+      add('Mlečno in hlajeno','Alpro sojin izdelek z okusom limoninega kolača','~450 g');
+      add('Mlečno in hlajeno','Rikota','~150 g');
+      add('Mlečno in hlajeno','Mleko','po receptih');
+      add('Mlečno in hlajeno','Smetana za kuhanje','po receptu');
+      add('Mlečno in hlajeno','Parmezan','po receptu');
+      add('Žita in pekovsko','Prosena kaša','~150 g');
+      add('Žita in pekovsko','Pirin kruh/toast','po receptih');
+      add('Posebne sestavine','Beljakovine v prahu (vanilija)','~60 g + po drugih receptih');
+      add('Posebne sestavine','Mleti mak','1 manjši paket');
+      add('Posebne sestavine','Višnjev džem','1 kozarec');
+      add('Posebne sestavine','Mandljev namaz','1 kozarec');
+      add('Posebne sestavine','Med','po receptu');
+      add('Posebne sestavine','Paradižnikov koncentrat','1 manjša tuba/konzerva');
+    }
     refreshNotes();
+    if(typeof render==='function') render();
     renderSmartPrep();
     document.querySelectorAll('.weeks button').forEach(b=>b.addEventListener('click',()=>setTimeout(renderSmartPrep,0)));
     const prepBtn=document.querySelector('.tabs button[data-tab="prep"]');
